@@ -158,54 +158,50 @@ class _MobileScannerState extends State<MobileScanner>
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return ValueListenableBuilder<MobileScannerArguments?>(
-          valueListenable: _controller.startArguments,
-          builder: (context, value, child) {
-            if (value == null) {
-              return _buildPlaceholderOrError(context, child);
-            }
+    return ValueListenableBuilder<MobileScannerArguments?>(
+      valueListenable: _controller.startArguments,
+      builder: (context, value, child) {
+        if (value == null) {
+          return _buildPlaceholderOrError(context, child);
+        }
 
-            _controller.updateScanWindow(
-                const Rect.fromLTRB(0.25, 0.125, 0.75, 0.375));
+        _controller
+            .updateScanWindow(const Rect.fromLTRB(0.25, 0.125, 0.75, 0.375));
 
-            return FittedBox(
-              child: Stack(
-                alignment: AlignmentDirectional.bottomCenter,
+        return FittedBox(
+          child: Stack(
+            alignment: AlignmentDirectional.bottomCenter,
+            children: [
+              SizedBox(
+                width: value.size.width,
+                height: value.size.height,
+                child: kIsWeb
+                    ? HtmlElementView(viewType: value.webId!)
+                    : Texture(textureId: value.textureId!),
+              ),
+              Column(
                 children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      border:
+                          Border.all(color: const Color(0xFF00BA88), width: 10),
+                    ),
+                    width: value.size.width / 2,
+                    height: value.size.height / 4,
+                  ),
                   SizedBox(
                     width: value.size.width,
-                    height: value.size.height,
-                    child: kIsWeb
-                        ? HtmlElementView(viewType: value.webId!)
-                        : Texture(textureId: value.textureId!),
+                    height: value.size.height / 8,
                   ),
-                  Column(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                              color: const Color(0xFF00BA88), width: 10),
-                        ),
-                        width: value.size.width / 2,
-                        height: value.size.height / 4,
-                      ),
-                      SizedBox(
-                        width: value.size.width,
-                        height: value.size.height / 8,
-                      ),
-                      Container(
-                        color: const Color(0xFFFFFFFF),
-                        height: value.size.height / 2,
-                        width: value.size.width,
-                      ),
-                    ],
+                  Container(
+                    color: const Color(0xFFFFFFFF),
+                    height: value.size.height / 2,
+                    width: value.size.width,
                   ),
                 ],
               ),
-            );
-          },
+            ],
+          ),
         );
       },
     );

@@ -50,6 +50,10 @@ class MobileScanner extends StatefulWidget {
   /// Default: false
   final bool startDelay;
 
+  final Color borderColor;
+
+  final double borderWidth;
+
   /// Create a new [MobileScanner] using the provided [controller]
   /// and [onBarcodeDetected] callback.
   const MobileScanner({
@@ -60,6 +64,8 @@ class MobileScanner extends StatefulWidget {
     this.onScannerStarted,
     this.placeholderBuilder,
     this.startDelay = false,
+    this.borderColor = const Color(0xFF00BA88),
+    this.borderWidth = 10,
     super.key,
   });
 
@@ -183,8 +189,10 @@ class _MobileScannerState extends State<MobileScanner>
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      border:
-                          Border.all(color: const Color(0xFF00BA88), width: 10),
+                      border: Border.all(
+                        color: widget.borderColor,
+                        width: widget.borderWidth,
+                      ),
                     ),
                     width: value.size.width / 2,
                     height: value.size.height / 4,

@@ -28,11 +28,6 @@ class MobileScanner extends StatefulWidget {
   /// with a centered white [Icons.error] icon.
   final MobileScannerErrorBuilder? errorBuilder;
 
-  /// The [BoxFit] for the camera preview.
-  ///
-  /// Defaults to [BoxFit.cover].
-  final BoxFit fit;
-
   /// The function that signals when new codes were detected by the [controller].
   final void Function(BarcodeCapture barcodes) onDetect;
 
@@ -49,36 +44,22 @@ class MobileScanner extends StatefulWidget {
   /// If this is null, a black [ColoredBox] is used as placeholder.
   final Widget Function(BuildContext, Widget?)? placeholderBuilder;
 
-  /// if set barcodes will only be scanned if they fall within this [Rect]
-  /// useful for having a cut-out overlay for example. these [Rect]
-  /// coordinates are relative to the widget size, so by how much your
-  /// rectangle overlays the actual image can depend on things like the
-  /// [BoxFit]
-  final Rect? scanWindow;
-
   /// Only set this to true if you are starting another instance of mobile_scanner
   /// right after disposing the first one, like in a PageView.
   ///
   /// Default: false
   final bool startDelay;
 
-  /// The overlay which will be painted above the scanner when has started successful.
-  /// Will no be pointed when an error occurs or the scanner hasn't be started yet.
-  final Widget? overlay;
-
   /// Create a new [MobileScanner] using the provided [controller]
   /// and [onBarcodeDetected] callback.
   const MobileScanner({
     this.controller,
     this.errorBuilder,
-    this.fit = BoxFit.cover,
     required this.onDetect,
     @Deprecated('Use onScannerStarted() instead.') this.onStart,
     this.onScannerStarted,
     this.placeholderBuilder,
-    this.scanWindow,
     this.startDelay = false,
-    this.overlay,
     super.key,
   });
 
@@ -175,77 +156,6 @@ class _MobileScannerState extends State<MobileScanner>
     }
   }
 
-  /// the [scanWindow] rect will be relative and scaled to the [widgetSize] not the texture. so it is possible,
-  /// depending on the [fit], for the [scanWindow] to partially or not at all overlap the [textureSize]
-  ///
-  /// since when using a [BoxFit] the content will always be centered on its parent. we can convert the rect
-  /// to be relative to the texture.
-  ///
-  /// since the textures size and the actuall image (on the texture size) might not be the same, we also need to
-  /// calculate the scanWindow in terms of percentages of the texture, not pixels.
-  Rect calculateScanWindowRelativeToTextureInPercentage(
-    BoxFit fit,
-    Rect scanWindow,
-    Size textureSize,
-    Size widgetSize,
-  ) {
-    double fittedTextureWidth;
-    double fittedTextureHeight;
-
-    switch (fit) {
-      case BoxFit.contain:
-        final widthRatio = widgetSize.width / textureSize.width;
-        final heightRatio = widgetSize.height / textureSize.height;
-        final scale = widthRatio < heightRatio ? widthRatio : heightRatio;
-        fittedTextureWidth = textureSize.width * scale;
-        fittedTextureHeight = textureSize.height * scale;
-        break;
-
-      case BoxFit.cover:
-        final widthRatio = widgetSize.width / textureSize.width;
-        final heightRatio = widgetSize.height / textureSize.height;
-        final scale = widthRatio > heightRatio ? widthRatio : heightRatio;
-        fittedTextureWidth = textureSize.width * scale;
-        fittedTextureHeight = textureSize.height * scale;
-        break;
-
-      case BoxFit.fill:
-        fittedTextureWidth = widgetSize.width;
-        fittedTextureHeight = widgetSize.height;
-        break;
-
-      case BoxFit.fitHeight:
-        final ratio = widgetSize.height / textureSize.height;
-        fittedTextureWidth = textureSize.width * ratio;
-        fittedTextureHeight = widgetSize.height;
-        break;
-
-      case BoxFit.fitWidth:
-        final ratio = widgetSize.width / textureSize.width;
-        fittedTextureWidth = widgetSize.width;
-        fittedTextureHeight = textureSize.height * ratio;
-        break;
-
-      case BoxFit.none:
-      case BoxFit.scaleDown:
-        fittedTextureWidth = textureSize.width;
-        fittedTextureHeight = textureSize.height;
-        break;
-    }
-
-    final offsetX = (widgetSize.width - fittedTextureWidth) / 2;
-    final offsetY = (widgetSize.height - fittedTextureHeight) / 2;
-
-    final left = (scanWindow.left - offsetX) / fittedTextureWidth;
-    final top = (scanWindow.top - offsetY) / fittedTextureHeight;
-    final right = (scanWindow.right - offsetX) / fittedTextureWidth;
-    final bottom = (scanWindow.bottom - offsetY) / fittedTextureHeight;
-
-    return Rect.fromLTRB(left, top, right, bottom);
-  }
-
-  Rect? scanWindow;
-
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -257,52 +167,47 @@ class _MobileScannerState extends State<MobileScanner>
               return _buildPlaceholderOrError(context, child);
             }
 
-            if (widget.scanWindow != null && scanWindow == null) {
-              scanWindow = calculateScanWindowRelativeToTextureInPercentage(
-                widget.fit,
-                widget.scanWindow!,
-                value.size,
-                Size(constraints.maxWidth, constraints.maxHeight),
-              );
+            _controller.updateScanWindow(
+                const Rect.fromLTRB(0.25, 0.125, 0.75, 0.375));
 
-              _controller.updateScanWindow(scanWindow);
-            }
-            if (widget.overlay != null) {
-              return Stack(
-                alignment: Alignment.center,
+            return FittedBox(
+              child: Stack(
+                alignment: AlignmentDirectional.bottomCenter,
                 children: [
-                  _scanner(value.size, value.webId, value.textureId),
-                  widget.overlay!,
+                  SizedBox(
+                    width: value.size.width,
+                    height: value.size.height,
+                    child: kIsWeb
+                        ? HtmlElementView(viewType: value.webId!)
+                        : Texture(textureId: value.textureId!),
+                  ),
+                  Column(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                              color: const Color(0xFF00BA88), width: 10),
+                        ),
+                        width: value.size.width / 2,
+                        height: value.size.height / 4,
+                      ),
+                      SizedBox(
+                        width: value.size.width,
+                        height: value.size.height / 8,
+                      ),
+                      Container(
+                        color: const Color(0xFFFFFFFF),
+                        height: value.size.height / 2,
+                        width: value.size.width,
+                      ),
+                    ],
+                  ),
                 ],
-              );
-            } else {
-              return _scanner(value.size, value.webId, value.textureId);
-            }
+              ),
+            );
           },
         );
       },
-    );
-  }
-
-  Widget _scanner(Size size, String? webId, int? textureId) {
-    return ClipRect(
-      child: LayoutBuilder(
-        builder: (_, constraints) {
-          return SizedBox.fromSize(
-            size: constraints.biggest,
-            child: FittedBox(
-              fit: widget.fit,
-              child: SizedBox(
-                width: size.width,
-                height: size.height,
-                child: kIsWeb
-                    ? HtmlElementView(viewType: webId!)
-                    : Texture(textureId: textureId!),
-              ),
-            ),
-          );
-        },
-      ),
     );
   }
 

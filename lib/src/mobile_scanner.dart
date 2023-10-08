@@ -44,6 +44,11 @@ class MobileScanner extends StatefulWidget {
   /// If this is null, a black [ColoredBox] is used as placeholder.
   final Widget Function(BuildContext, Widget?)? placeholderBuilder;
 
+  final Widget Function(BuildContext, Widget, MobileScannerArguments)
+      cameraBuilder;
+
+  final Rect? scanWindow;
+
   /// Only set this to true if you are starting another instance of mobile_scanner
   /// right after disposing the first one, like in a PageView.
   ///
@@ -60,6 +65,8 @@ class MobileScanner extends StatefulWidget {
     this.controller,
     this.errorBuilder,
     required this.onDetect,
+    required this.cameraBuilder,
+    this.scanWindow,
     @Deprecated('Use onScannerStarted() instead.') this.onStart,
     this.onScannerStarted,
     this.placeholderBuilder,
@@ -118,7 +125,12 @@ class _MobileScannerState extends State<MobileScanner>
       );
       return;
     }
-
+    if (_controller.isStarting) {
+      debugPrint(
+        'mobile_scanner: the controller is already starting.',
+      );
+      return;
+    }
     _controller.start().then((arguments) {
       // ignore: deprecated_member_use_from_same_package
       widget.onStart?.call(arguments);
@@ -171,45 +183,13 @@ class _MobileScannerState extends State<MobileScanner>
           return _buildPlaceholderOrError(context, child);
         }
 
-        _controller
-            .updateScanWindow(const Rect.fromLTRB(0.25, 0.125, 0.75, 0.375));
-
-        return FittedBox(
-          child: Stack(
-            alignment: AlignmentDirectional.bottomCenter,
-            children: [
-              SizedBox(
-                width: value.size.width,
-                height: value.size.height,
-                child: kIsWeb
-                    ? HtmlElementView(viewType: value.webId!)
-                    : Texture(textureId: value.textureId!),
-              ),
-              Column(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: widget.borderColor,
-                        width: widget.borderWidth,
-                      ),
-                    ),
-                    width: value.size.width / 2,
-                    height: value.size.height / 4,
-                  ),
-                  SizedBox(
-                    width: value.size.width,
-                    height: value.size.height / 8,
-                  ),
-                  Container(
-                    color: const Color(0xFFFFFFFF),
-                    height: value.size.height / 2,
-                    width: value.size.width,
-                  ),
-                ],
-              ),
-            ],
-          ),
+        _controller.updateScanWindow(widget.scanWindow);
+        return widget.cameraBuilder(
+          context,
+          kIsWeb
+              ? HtmlElementView(viewType: value.webId!)
+              : Texture(textureId: value.textureId!),
+          value,
         );
       },
     );

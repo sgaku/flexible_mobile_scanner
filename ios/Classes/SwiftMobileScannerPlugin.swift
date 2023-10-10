@@ -27,8 +27,8 @@ public class SwiftMobileScannerPlugin: NSObject, FlutterPlugin {
         let minX = scanwindow[0] * imageSize.width
         let minY = scanwindow[1] * imageSize.height
 
-        let width = (scanwindow[2] * imageSize.width)  - minX
-        let height = (scanwindow[3] * imageSize.height) - minY
+        let width = scanwindow[2]
+        let height = scanwindow[3]
 
         let scaledWindow =  CGRect(x: minX, y: minY, width: width, height: height)
         
@@ -221,20 +221,7 @@ public class SwiftMobileScannerPlugin: NSObject, FlutterPlugin {
 
         result(nil)
     }
-    
-    static func arrayToRect(scanWindowData: [CGFloat]?) -> CGRect? {
-        if (scanWindowData == nil) {
-            return nil
-        }
 
-        let minX = scanWindowData![0]
-        let minY = scanWindowData![1]
-
-        let width = scanWindowData![2]  - minX
-        let height = scanWindowData![3] - minY
-
-        return CGRect(x: minX, y: minY, width: width, height: height)
-    }
     
     /// Analyzes a single image
     private func analyzeImage(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {

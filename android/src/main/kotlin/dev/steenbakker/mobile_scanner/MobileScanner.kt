@@ -76,7 +76,7 @@ class MobileScanner(
 
                 for (barcode in barcodes) {
                     if (scanWindow != null) {
-                        val match = isBarcodeInScanWindow(scanWindow!!, barcode, imageProxy)
+                        val match = isBarcodeInScanWindow(scanWindow!!, barcode)
                         if (!match) {
                             continue
                         } else {
@@ -91,13 +91,20 @@ class MobileScanner(
                 if (barcodeMap.isNotEmpty()) {
                     if (returnImage) {
 
-                        val bitmap = Bitmap.createBitmap(mediaImage.width, mediaImage.height, Bitmap.Config.ARGB_8888)
+                        val bitmap = Bitmap.createBitmap(
+                            mediaImage.width,
+                            mediaImage.height,
+                            Bitmap.Config.ARGB_8888
+                        )
 
                         val imageFormat = YuvToRgbConverter(activity.applicationContext)
 
                         imageFormat.yuvToRgb(mediaImage, bitmap)
 
-                        val bmResult = rotateBitmap(bitmap, camera?.cameraInfo?.sensorRotationDegrees?.toFloat() ?: 90f)
+                        val bmResult = rotateBitmap(
+                            bitmap,
+                            camera?.cameraInfo?.sensorRotationDegrees?.toFloat() ?: 90f
+                        )
 
                         val stream = ByteArrayOutputStream()
                         bmResult.compress(Bitmap.CompressFormat.PNG, 100, stream)
@@ -150,17 +157,13 @@ class MobileScanner(
     private fun isBarcodeInScanWindow(
         scanWindow: List<Float>,
         barcode: Barcode,
-        inputImage: ImageProxy
     ): Boolean {
         val barcodeBoundingBox = barcode.boundingBox ?: return false
 
-        val imageWidth = inputImage.height
-        val imageHeight = inputImage.width
-
-        val left = (scanWindow[0] * imageWidth).roundToInt()
-        val top = (scanWindow[1] * imageHeight).roundToInt()
-        val right = (scanWindow[2] * imageWidth).roundToInt()
-        val bottom = (scanWindow[3] * imageHeight).roundToInt()
+        val left = scanWindow[0].roundToInt()
+        val top = scanWindow[1].roundToInt()
+        val right = scanWindow[2].roundToInt()
+        val bottom = scanWindow[3].roundToInt()
 
         val scaledScanWindow = Rect(left, top, right, bottom)
         return scaledScanWindow.contains(barcodeBoundingBox)
@@ -270,6 +273,7 @@ class MobileScanner(
         }, executor)
 
     }
+
     /**
      * Stop barcode scanning.
      */

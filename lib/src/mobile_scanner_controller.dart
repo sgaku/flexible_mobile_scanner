@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+
 // ignore: unnecessary_import
 import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
@@ -61,6 +62,7 @@ class MobileScannerController {
   /// Sets the barcode stream
   final StreamController<BarcodeCapture> _barcodesController =
       StreamController.broadcast();
+
   Stream<BarcodeCapture> get barcodes => _barcodesController.stream;
 
   static const MethodChannel _methodChannel =
@@ -423,7 +425,12 @@ class MobileScannerController {
   Future<void> updateScanWindow(Rect? window) async {
     List? data;
     if (window != null) {
-      data = [window.left, window.top, window.right, window.bottom];
+      data = [
+        window.left,
+        window.top,
+        window.width,
+        window.height,
+      ];
     }
 
     await _methodChannel.invokeMethod('updateScanWindow', {'rect': data});

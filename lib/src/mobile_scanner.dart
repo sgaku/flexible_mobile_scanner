@@ -44,10 +44,16 @@ class MobileScanner extends StatefulWidget {
   /// If this is null, a black [ColoredBox] is used as placeholder.
   final Widget Function(BuildContext, Widget?)? placeholderBuilder;
 
+  /// ⚡️ Added function from original
+  ///
+  /// The function that builds a camera widget when the scanner
   final Widget Function(BuildContext, Widget, MobileScannerArguments)
       cameraBuilder;
 
-  final Rect? scanWindow;
+  /// ⚡️ Added function from original
+  ///
+  /// The function that builds ScanWindow
+  final Rect? Function(MobileScannerArguments)? scanWindowBuilder;
 
   /// Only set this to true if you are starting another instance of mobile_scanner
   /// right after disposing the first one, like in a PageView.
@@ -66,7 +72,7 @@ class MobileScanner extends StatefulWidget {
     this.errorBuilder,
     required this.onDetect,
     required this.cameraBuilder,
-    this.scanWindow,
+    this.scanWindowBuilder,
     @Deprecated('Use onScannerStarted() instead.') this.onStart,
     this.onScannerStarted,
     this.placeholderBuilder,
@@ -176,20 +182,28 @@ class _MobileScannerState extends State<MobileScanner>
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<MobileScannerArguments?>(
-      valueListenable: _controller.startArguments,
-      builder: (context, value, child) {
-        if (value == null) {
-          return _buildPlaceholderOrError(context, child);
-        }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return ValueListenableBuilder<MobileScannerArguments?>(
+          valueListenable: _controller.startArguments,
+          builder: (context, value, child) {
+            if (value == null) {
+              return _buildPlaceholderOrError(context, child);
+            }
 
-        _controller.updateScanWindow(widget.scanWindow);
-        return widget.cameraBuilder(
-          context,
-          kIsWeb
-              ? HtmlElementView(viewType: value.webId!)
-              : Texture(textureId: value.textureId!),
-          value,
+            if (widget.scanWindowBuilder != null) {
+              final scanWindow = widget.scanWindowBuilder!(value);
+              _controller.updateScanWindow(scanWindow);
+            }
+
+            return widget.cameraBuilder(
+              context,
+              kIsWeb
+                  ? HtmlElementView(viewType: value.webId!)
+                  : Texture(textureId: value.textureId!),
+              value,
+            );
+          },
         );
       },
     );

@@ -32,7 +32,7 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('example'),
+        title: const Text('example'),
       ),
       body: Center(
         child: TextButton(
@@ -56,6 +56,8 @@ class MyHomePage extends StatelessWidget {
 class ScanScreen extends StatelessWidget {
   const ScanScreen({Key? key}) : super(key: key);
 
+  static const visibleAspectRatio = 0.25;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,7 +77,17 @@ class ScanScreen extends StatelessWidget {
                 ),
               );
             },
-            scanWindow: const Rect.fromLTRB(0.5, 0.5, 0.5, 0.5),
+            scanWindowBuilder: (arguments) {
+              final aspectRatio = arguments.size.width / arguments.size.height;
+              final screenWidth = MediaQuery.sizeOf(context).width;
+              final previewHeight = screenWidth / aspectRatio;
+              return Rect.fromLTWH(
+                0,
+                0,
+                arguments.size.width,
+                previewHeight,
+              );
+            },
             errorBuilder: (context, exception, child) {
               return const Text('error');
             },
@@ -84,7 +96,8 @@ class ScanScreen extends StatelessWidget {
               final screenWidth = MediaQuery.sizeOf(context).width;
               return ClipRect(
                 child: Align(
-                  heightFactor: 0.25,
+                  heightFactor: visibleAspectRatio,
+                  alignment: Alignment.topCenter,
                   child: SizedBox(
                     height: screenWidth / aspectRatio,
                     width: screenWidth,

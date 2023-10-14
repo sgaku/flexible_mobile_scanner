@@ -35,7 +35,7 @@ public class FlexibleMobileScannerPlugin: NSObject, FlutterPlugin, FlutterStream
     var position = AVCaptureDevice.Position.back
     
     public static func register(with registrar: FlutterPluginRegistrar) {
-        let instance = MobileScannerPlugin(registrar.textures)
+        let instance = FlexibleMobileScannerPlugin(registrar.textures)
         
         let method = FlutterMethodChannel(name:
                                             "dev.steenbakker.mobile_scanner/scanner/method", binaryMessenger: registrar.messenger)

@@ -1,6 +1,6 @@
 //
-//  MobileScannerError.swift
-//  mobile_scanner
+//  FlexibleMobileScannerError.swift
+//  flexible_mobile_scanner
 //
 //  Created by Julian Steenbakker on 24/08/2022.
 //

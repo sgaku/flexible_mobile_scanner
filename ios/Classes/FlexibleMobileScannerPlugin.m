@@ -1,6 +1,6 @@
-#import "MobileScannerPlugin.h"
-#if __has_include(<mobile_scanner/mobile_scanner-Swift.h>)
-#import <mobile_scanner/mobile_scanner-Swift.h>
+#import "FlexibleMobileScannerPlugin.h"
+#if __has_include(<flexible_mobile_scanner/flexible_mobile_scanner-Swift.h>)
+#import <flexible_mobile_scanner/flexible_mobile_scanner-Swift.h>
 #else
 // Support project import fallback if the generated compatibility header
 // is not copied when this plugin is created as a library.
@@ -8,8 +8,8 @@
 #import "mobile_scanner-Swift.h"
 #endif
 
-@implementation MobileScannerPlugin
+@implementation FlexibleMobileScannerPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  [SwiftMobileScannerPlugin registerWithRegistrar:registrar];
+  [SwiftFlexibleMobileScannerPlugin registerWithRegistrar:registrar];
 }
 @end

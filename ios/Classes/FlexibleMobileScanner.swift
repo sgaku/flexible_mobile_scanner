@@ -1,6 +1,6 @@
 //
-//  SwiftMobileScanner.swift
-//  mobile_scanner
+//  SwiftFlexibleMobileScanner.swift
+//  flexible_mobile_scanner
 //
 //  Created by Julian Steenbakker on 15/02/2022.
 //
@@ -15,7 +15,7 @@ typealias MobileScannerCallback = ((Array<Barcode>?, Error?, UIImage) -> ())
 typealias TorchModeChangeCallback = ((Int?) -> ())
 typealias ZoomScaleChangeCallback = ((Double?) -> ())
 
-public class MobileScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, FlutterTexture {
+public class FlexibleMobileScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, FlutterTexture {
     /// Capture session of the camera
     var captureSession: AVCaptureSession!
 

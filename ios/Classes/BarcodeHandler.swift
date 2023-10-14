@@ -1,6 +1,6 @@
 //
 //  BarcodeHandler.swift
-//  mobile_scanner
+//  flexible_mobile_scanner
 //
 //  Created by Julian Steenbakker on 24/08/2022.
 //

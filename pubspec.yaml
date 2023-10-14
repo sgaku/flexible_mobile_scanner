@@ -1,6 +1,6 @@
 name: flexible_mobile_scanner
 description: A fork of mobile_scanner with more flexible options - scanWindowBuilder and cameraPreviewBuilder.
-version: 1.0.0
+version: 1.0.0+1
 repository: https://github.com/sgaku/flexible_mobile_scanner
 
 environment:

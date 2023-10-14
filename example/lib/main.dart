@@ -89,7 +89,8 @@ class ScanScreen extends StatelessWidget {
               );
             },
             errorBuilder: (context, exception, child) {
-              return const Text('error');
+              final errorMessage = 'error:${exception.errorDetails?.message}';
+              return Center(child: Text(errorMessage));
             },
             cameraBuilder: (context, camera, arguments) {
               final aspectRatio = arguments.size.width / arguments.size.height;

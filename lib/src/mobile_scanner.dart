@@ -182,28 +182,24 @@ class _MobileScannerState extends State<MobileScanner>
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return ValueListenableBuilder<MobileScannerArguments?>(
-          valueListenable: _controller.startArguments,
-          builder: (context, value, child) {
-            if (value == null) {
-              return _buildPlaceholderOrError(context, child);
-            }
+    return ValueListenableBuilder<MobileScannerArguments?>(
+      valueListenable: _controller.startArguments,
+      builder: (context, value, child) {
+        if (value == null) {
+          return _buildPlaceholderOrError(context, child);
+        }
 
-            if (widget.scanWindowBuilder != null) {
-              final scanWindow = widget.scanWindowBuilder!(value);
-              _controller.updateScanWindow(scanWindow);
-            }
+        if (widget.scanWindowBuilder != null) {
+          final scanWindow = widget.scanWindowBuilder!(value);
+          _controller.updateScanWindow(scanWindow);
+        }
 
-            return widget.cameraBuilder(
-              context,
-              kIsWeb
-                  ? HtmlElementView(viewType: value.webId!)
-                  : Texture(textureId: value.textureId!),
-              value,
-            );
-          },
+        return widget.cameraBuilder(
+          context,
+          kIsWeb
+              ? HtmlElementView(viewType: value.webId!)
+              : Texture(textureId: value.textureId!),
+          value,
         );
       },
     );

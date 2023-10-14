@@ -49,18 +49,6 @@ NSPhotoLibraryUsageDescription - describe why your app needs permission for the 
   <string>This app needs photos access to get QR code from photo library</string>
   ```
   
-  
-### macOS
-Ensure that you granted camera permission in XCode -> Signing & Capabilities:
-
-<img width="696" alt="Screenshot of XCode where Camera is checked" src="https://user-images.githubusercontent.com/24459435/193464115-d76f81d0-6355-4cb2-8bee-538e413a3ad0.png">
-
-## Web
-This package uses ZXing on web to read barcodes so it needs to be included in `index.html` as script.
-```html
-<script src="https://unpkg.com/@zxing/library@0.19.1" type="application/javascript"></script>
-```
-
 ## Usage
 Most of the functions are the same as [mobile_scanner](https://pub.dev/packages/mobile_scanner#usage). Only the different parts are explained below.
 

@@ -44,15 +44,30 @@ class MobileScanner extends StatefulWidget {
   /// If this is null, a black [ColoredBox] is used as placeholder.
   final Widget Function(BuildContext, Widget?)? placeholderBuilder;
 
-  /// ⚡️ Added function from original
+  /// ⚡️ Added function from the original package
   ///
-  /// The function that builds a camera widget when the scanner
-  final Widget Function(BuildContext, Widget, MobileScannerArguments)
-      cameraBuilder;
+  /// A function that builds and customizes the camera preview display within the scanner.
+  /// The [cameraPreviewBuilder] takes the following parameters:
+  /// - [context]: The build context for the widget tree.
+  /// - [texture]: The widget that displays the camera preview (typically a [Texture] or [HtmlElementView]).
+  /// - [arguments]: The [MobileScannerArguments] that contain metadata about the scanner.
+  ///
+  /// This builder allows developers to modify the appearance and layout of the camera preview
+  /// as per the application's requirements.
+  final Widget Function(
+    BuildContext context,
+    Widget texture,
+    MobileScannerArguments arguments,
+  ) cameraPreviewBuilder;
 
-  /// ⚡️ Added function from original
+  /// ⚡️ Added function from the original package
   ///
-  /// The function that builds ScanWindow
+  /// A function that builds the scan window which is an area where the scanner actively looks for barcodes.
+  /// The [scanWindowBuilder] takes the following parameter:
+  /// - [arguments]: The [MobileScannerArguments] that contain metadata about the scanner.
+  ///
+  /// This builder allows developers to adjust the scan window, defining where the scanner should
+  /// specifically look for barcodes within the camera preview.
   final Rect? Function(MobileScannerArguments)? scanWindowBuilder;
 
   /// Only set this to true if you are starting another instance of mobile_scanner
@@ -71,7 +86,7 @@ class MobileScanner extends StatefulWidget {
     this.controller,
     this.errorBuilder,
     required this.onDetect,
-    required this.cameraBuilder,
+    required this.cameraPreviewBuilder,
     this.scanWindowBuilder,
     @Deprecated('Use onScannerStarted() instead.') this.onStart,
     this.onScannerStarted,
@@ -194,7 +209,7 @@ class _MobileScannerState extends State<MobileScanner>
           _controller.updateScanWindow(scanWindow);
         }
 
-        return widget.cameraBuilder(
+        return widget.cameraPreviewBuilder(
           context,
           kIsWeb
               ? HtmlElementView(viewType: value.webId!)

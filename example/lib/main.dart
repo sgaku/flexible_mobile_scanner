@@ -92,7 +92,7 @@ class ScanScreen extends StatelessWidget {
               final errorMessage = 'error:${exception.errorDetails?.message}';
               return Center(child: Text(errorMessage));
             },
-            cameraBuilder: (context, camera, arguments) {
+            cameraPreviewBuilder: (context, camera, arguments) {
               final aspectRatio = arguments.size.width / arguments.size.height;
               final screenWidth = MediaQuery.sizeOf(context).width;
               return ClipRect(

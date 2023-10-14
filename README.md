@@ -1,11 +1,12 @@
-# mobile_scanner
+# flexible_mobile_scanner
 
-[![pub package](https://img.shields.io/pub/v/mobile_scanner.svg)](https://pub.dev/packages/mobile_scanner)
+[![pub package](https://img.shields.io/pub/v/flexible_mobile_scanner.svg)](https://pub.dev/packages/flexible_mobile_scanner)
 [![style: lint](https://img.shields.io/badge/style-lint-4BC0F5.svg)](https://pub.dev/packages/lint)
-[![mobile_scanner](https://github.com/juliansteenbakker/mobile_scanner/actions/workflows/flutter.yml/badge.svg)](https://github.com/juliansteenbakker/mobile_scanner/actions/workflows/flutter.yml)
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/juliansteenbakker?label=like%20my%20work?%20sponsor%20me!)](https://github.com/sponsors/juliansteenbakker)
 
-A universal scanner for Flutter based on MLKit. Uses CameraX on Android and AVFoundation on iOS. 
+
+
+A fork of [mobile_scanner](https://pub.dev/packages/mobile_scanner) with more flexible options:
+scanWindowBuilder and cameraPreviewBuilder.
 
 
 ## Features Supported
@@ -61,163 +62,54 @@ This package uses ZXing on web to read barcodes so it needs to be included in `i
 ```
 
 ## Usage
+Most of the functions are the same as [mobile_scanner](https://pub.dev/packages/mobile_scanner#usage). Only the different parts are explained below.
 
-Import `package:mobile_scanner/mobile_scanner.dart`, and use the widget with or without the controller.
+### 💡 Camera Customization with cameraPreviewBuilder
 
-If you don't provide a controller, you can't control functions like the torch(flash) or switching camera.
+The cameraPreviewBuilder function provides you with the flexibility to customize the way the camera preview is displayed on the screen. It returns a widget that incorporates the camera view. With the parameters (BuildContext context, Widget texture, MobileScannerArguments arguments), you can manipulate the camera’s display properties as per your requirement.
 
-If you don't set `detectionSpeed` to `DetectionSpeed.noDuplicates`, you can get multiple scans in a very short time, causing things like pop() to fire lots of times.
-
-Example without controller:
-
+Example:
 ```dart
-import 'package:mobile_scanner/mobile_scanner.dart';
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Mobile Scanner')),
-      body: MobileScanner(
-        // fit: BoxFit.contain,
-        onDetect: (capture) {
-          final List<Barcode> barcodes = capture.barcodes;
-          final Uint8List? image = capture.image;
-          for (final barcode in barcodes) {
-            debugPrint('Barcode found! ${barcode.rawValue}');
-          }
-        },
+cameraPreviewBuilder: (context, texture, arguments) {
+  final aspectRatio = arguments.size.width / arguments.size.height;
+  final screenWidth = MediaQuery.sizeOf(context).width;
+  return ClipRect(
+    child: Align(
+      heightFactor: visibleAspectRatio,
+      alignment: Alignment.topCenter,
+      child: SizedBox(
+        height: screenWidth / aspectRatio,
+        width: screenWidth,
+        child: texture,
       ),
-    );
-  }
+    ),
+  );
+},
 ```
 
-Example with controller and initial values:
+In the above example, texture is the widget that displays the camera preview, and by using different widgets like ClipRect, Align, and SizedBox, you can customize its size and position.
 
+### 🎯 Scan Window Customization with scanWindowBuilder
+
+The scanWindowBuilder allows you to define a specific rectangular area within which the barcode scanner will detect and decode barcodes. This can be helpful in scenarios where you want to restrict the scanning area for better user experience or due to UI constraints.
+
+Example:
 ```dart
-import 'package:mobile_scanner/mobile_scanner.dart';
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Mobile Scanner')),
-      body: MobileScanner(
-        // fit: BoxFit.contain,
-        controller: MobileScannerController(
-          detectionSpeed: DetectionSpeed.normal,
-          facing: CameraFacing.front,
-          torchEnabled: true,
-        ),
-        onDetect: (capture) {
-          final List<Barcode> barcodes = capture.barcodes;
-          final Uint8List? image = capture.image;
-          for (final barcode in barcodes) {
-            debugPrint('Barcode found! ${barcode.rawValue}');
-          }
-        },
-      ),
-    );
-  }
+scanWindowBuilder: (arguments) {
+  final aspectRatio = arguments.size.width / arguments.size.height;
+  final screenWidth = MediaQuery.sizeOf(context).width;
+  final previewHeight = screenWidth / aspectRatio;
+  return Rect.fromLTWH(
+    0,
+    0,
+    arguments.size.width,
+    previewHeight,
+  );
+},
 ```
 
-Example with controller and torch & camera controls:
+In this example, the scan window is adjusted based on the screen's width and the preview's aspect ratio to create a scanning area that fills the width of the screen and has a height determined by the preview's aspect ratio.
 
-```dart
-import 'package:mobile_scanner/mobile_scanner.dart';
-
-  MobileScannerController cameraController = MobileScannerController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Mobile Scanner'),
-          actions: [
-            IconButton(
-              color: Colors.white,
-              icon: ValueListenableBuilder(
-                valueListenable: cameraController.torchState,
-                builder: (context, state, child) {
-                  switch (state as TorchState) {
-                    case TorchState.off:
-                      return const Icon(Icons.flash_off, color: Colors.grey);
-                    case TorchState.on:
-                      return const Icon(Icons.flash_on, color: Colors.yellow);
-                  }
-                },
-              ),
-              iconSize: 32.0,
-              onPressed: () => cameraController.toggleTorch(),
-            ),
-            IconButton(
-              color: Colors.white,
-              icon: ValueListenableBuilder(
-                valueListenable: cameraController.cameraFacingState,
-                builder: (context, state, child) {
-                  switch (state as CameraFacing) {
-                    case CameraFacing.front:
-                      return const Icon(Icons.camera_front);
-                    case CameraFacing.back:
-                      return const Icon(Icons.camera_rear);
-                  }
-                },
-              ),
-              iconSize: 32.0,
-              onPressed: () => cameraController.switchCamera(),
-            ),
-          ],
-        ),
-        body: MobileScanner(
-          // fit: BoxFit.contain,
-          controller: cameraController,
-          onDetect: (capture) {
-            final List<Barcode> barcodes = capture.barcodes;
-            final Uint8List? image = capture.image;
-            for (final barcode in barcodes) {
-              debugPrint('Barcode found! ${barcode.rawValue}');
-            }
-          },
-        ),
-    );
-  }
-```
-
-Example with controller and returning images
-
-```dart
-import 'package:mobile_scanner/mobile_scanner.dart';
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Mobile Scanner')),
-      body: MobileScanner(
-        fit: BoxFit.contain,
-        controller: MobileScannerController(
-          // facing: CameraFacing.back,
-          // torchEnabled: false,
-          returnImage: true,
-        ),
-        onDetect: (capture) {
-          final List<Barcode> barcodes = capture.barcodes;
-          final Uint8List? image = capture.image;
-          for (final barcode in barcodes) {
-            debugPrint('Barcode found! ${barcode.rawValue}');
-          }
-          if (image != null) {
-            showDialog(
-              context: context,
-              builder: (context) =>
-                  Image(image: MemoryImage(image)),
-            );
-            Future.delayed(const Duration(seconds: 5), () {
-              Navigator.pop(context);
-            });
-          }
-        },
-      ),
-    );
-  }
-```
 
 ### BarcodeCapture
 

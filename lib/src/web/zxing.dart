@@ -3,10 +3,10 @@ import 'dart:html';
 import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:flexible_mobile_scanner/mobile_scanner_web.dart';
+import 'package:flexible_mobile_scanner/src/enums/camera_facing.dart';
+import 'package:flexible_mobile_scanner/src/objects/barcode.dart';
 import 'package:js/js.dart';
-import 'package:mobile_scanner/src/enums/camera_facing.dart';
-import 'package:mobile_scanner/src/objects/barcode.dart';
-import 'package:mobile_scanner/src/web/base.dart';
 
 @JS('ZXing.BrowserMultiFormatReader')
 @staticInterop

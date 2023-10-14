@@ -1,11 +1,11 @@
 import 'dart:async';
 
+import 'package:flexible_mobile_scanner/src/mobile_scanner_controller.dart';
+import 'package:flexible_mobile_scanner/src/mobile_scanner_exception.dart';
+import 'package:flexible_mobile_scanner/src/objects/barcode_capture.dart';
+import 'package:flexible_mobile_scanner/src/objects/mobile_scanner_arguments.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_scanner/src/mobile_scanner_controller.dart';
-import 'package:mobile_scanner/src/mobile_scanner_exception.dart';
-import 'package:mobile_scanner/src/objects/barcode_capture.dart';
-import 'package:mobile_scanner/src/objects/mobile_scanner_arguments.dart';
 
 /// The function signature for the error builder.
 typedef MobileScannerErrorBuilder = Widget Function(

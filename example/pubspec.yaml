@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
-  mobile_scanner:
+  flexible_mobile_scanner:
 
 dev_dependencies:
   flutter_test:
@@ -19,7 +19,7 @@ dev_dependencies:
   flutter_lints: ^2.0.0
 
 dependency_overrides:
-  mobile_scanner:
+  flexible_mobile_scanner:
     path: ../
 
 flutter:

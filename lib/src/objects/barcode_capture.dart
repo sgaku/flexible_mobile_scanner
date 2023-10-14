@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:mobile_scanner/src/objects/barcode.dart';
+import 'package:flexible_mobile_scanner/src/objects/barcode.dart';
 
 /// The return object after a frame is scanned.
 ///

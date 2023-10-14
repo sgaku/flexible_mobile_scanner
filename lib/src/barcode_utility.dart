@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
+import 'package:flexible_mobile_scanner/src/objects/barcode.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
 
 Size toSize(Map data) {
   final width = data['width'] as double;

@@ -1,11 +1,11 @@
 import 'dart:html' as html;
 
+import 'package:flexible_mobile_scanner/src/enums/camera_facing.dart';
+import 'package:flexible_mobile_scanner/src/objects/barcode.dart';
+import 'package:flexible_mobile_scanner/src/web/media.dart';
 import 'package:flutter/material.dart';
 import 'package:js/js.dart';
 import 'package:js/js_util.dart';
-import 'package:mobile_scanner/src/enums/camera_facing.dart';
-import 'package:mobile_scanner/src/objects/barcode.dart';
-import 'package:mobile_scanner/src/web/media.dart';
 
 class JsLibrary {
   /// The name of global variable where library is stored.

@@ -1,6 +1,6 @@
 //
 //  DetectionSpeed.swift
-//  mobile_scanner
+//  flexible_mobile_scanner
 //
 //  Created by Julian Steenbakker on 11/11/2022.
 //

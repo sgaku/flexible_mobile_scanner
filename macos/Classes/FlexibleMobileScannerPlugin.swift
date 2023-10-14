@@ -3,7 +3,7 @@ import FlutterMacOS
 import Vision
 import AppKit
 
-public class MobileScannerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, FlutterTexture, AVCaptureVideoDataOutputSampleBufferDelegate {
+public class FlexibleMobileScannerPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, FlutterTexture, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     let registry: FlutterTextureRegistry
     
